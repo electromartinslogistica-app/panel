@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<title>Panel Depósito — Electro Martin's</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/2.47.0/iconfont/tabler-icons.min.css">
+<style>
+:root{
+  --azul-osc:#1F3864;--azul-med:#2E75B6;--azul-cla:#EBF3FA;--azul-pal:#D6E4F0;
+  --bg:#F4F5F7;--card:#FFFFFF;--border:#E3E6EA;--text:#1A1A1A;--text-sec:#6B7280;--text-ter:#9CA3AF;
+  --rojo:#E24B4A;--rojo-bg:#FCEBEB;--naranja:#EF9F27;--naranja-bg:#FAEEDA;
+  --verde:#1D9E75;--verde-bg:#E1F5EE;--gris-p:#888780;--amarillo-bg:#FFFDE7;
+  --purple:#7C3AED;--purple-bg:#F3EFFE;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.app{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+.hidden{display:none!important}
+
+/* LOGIN */
+.login-screen{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;min-height:100vh}
+.login-logo{width:68px;height:68px;border-radius:18px;background:var(--azul-osc);display:flex;align-items:center;justify-content:center;margin-bottom:14px}
+.login-logo i{font-size:32px;color:#fff}
+.login-h1{font-size:21px;font-weight:700;margin-bottom:3px}
+.login-sub{font-size:13px;color:var(--text-sec);margin-bottom:28px;text-align:center}
+.login-card{width:100%;max-width:320px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px 20px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:11px;font-weight:700;color:var(--text-sec);margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.field input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:10px;font-size:16px;background:var(--bg)}
+.field input:focus{outline:none;border-color:var(--azul-med);background:#fff}
+.pin-input{letter-spacing:8px;font-weight:700;text-align:center}
+.btn-primary{width:100%;padding:13px;background:var(--azul-osc);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary:active{opacity:.85}
+.btn-primary:disabled{opacity:.5}
+.alert-box{border-radius:10px;padding:11px 13px;margin-bottom:14px;font-size:13px;display:flex;align-items:flex-start;gap:8px;line-height:1.4}
+.alert-error{background:var(--rojo-bg);color:var(--rojo)}
+.alert-block{background:#F3E5F5;color:#6A1B9A}
+
+/* TOPBAR */
+.topbar{background:var(--azul-osc);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.topbar-left{display:flex;flex-direction:column;gap:2px}
+.topbar-name{color:#fff;font-size:16px;font-weight:700}
+.topbar-role{color:#B5D4F4;font-size:12px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.area-badge{font-size:11px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.15);color:#fff;font-weight:600}
+.logout-btn{background:none;border:none;color:#B5D4F4;font-size:20px;cursor:pointer;padding:4px;display:flex}
+
+/* TABS */
+.tabs{display:flex;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:58px;z-index:9;overflow-x:auto}
+.tab{flex:1;padding:11px 6px;text-align:center;font-size:11px;font-weight:700;color:var(--text-sec);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:58px}
+.tab i{font-size:17px}
+.tab.active{color:var(--azul-osc);border-bottom-color:var(--azul-osc)}
+.tab-badge{background:var(--rojo);color:#fff;font-size:9px;font-weight:700;padding:1px 5px;border-radius:99px;margin-left:3px}
+
+.content{flex:1;padding:16px;padding-bottom:40px}
+.screen-panel{display:none}
+.screen-panel.active{display:block}
+.section-label{font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.05em;margin:18px 0 8px;display:flex;align-items:center;gap:6px}
+.section-label:first-child{margin-top:0}
+.section-count{background:var(--azul-cla);color:var(--azul-osc);font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px}
+
+/* DAY HEADER */
+.day-header{background:var(--azul-osc);border-radius:14px;padding:14px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between}
+.day-title{color:#fff;font-size:16px;font-weight:700}
+.day-sub{color:#B5D4F4;font-size:12px;margin-top:2px}
+.day-prog{display:flex;align-items:center;gap:10px}
+.day-prog-num{color:#fff;font-size:20px;font-weight:700}
+.day-prog-label{color:#B5D4F4;font-size:11px}
+.prog-ring{width:44px;height:44px}
+
+/* TURNO CHECK */
+.turno-card{background:var(--amarillo-bg);border:1px solid #F9A825;border-radius:14px;padding:14px 16px;margin-bottom:14px}
+.turno-title{font-size:14px;font-weight:700;color:#7A5000;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.turno-items{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.turno-item{display:flex;align-items:center;gap:10px;font-size:13px}
+.turno-check{width:22px;height:22px;border-radius:6px;border:1.5px solid #F9A825;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fff}
+.turno-check.checked{background:#F9A825;border-color:#F9A825}
+.turno-check.checked i{display:block}
+.turno-check i{display:none;font-size:13px;color:#fff}
+.btn-turno{width:100%;padding:11px;background:#F9A825;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
+.btn-turno:disabled{opacity:.5}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:11px 10px}
+.stat-label{font-size:10px;color:var(--text-sec);margin-bottom:3px;display:flex;align-items:center;gap:4px}
+.stat-val{font-size:20px;font-weight:700}
+.stat-val span{font-size:11px;color:var(--text-sec);font-weight:400}
+
+/* AVISOS ADMIN */
+.aviso-card{background:var(--purple-bg);border:1.5px solid #C4B5FD;border-radius:14px;padding:13px 15px;margin-bottom:10px}
+.aviso-card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
+.aviso-card-titulo{font-size:14px;font-weight:700;color:var(--purple);display:flex;align-items:center;gap:7px}
+.aviso-card-msg{font-size:13.5px;color:var(--text);line-height:1.45;margin-bottom:8px}
+.aviso-card-meta{font-size:11px;color:var(--text-sec);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.aviso-vence{background:var(--naranja-bg);color:var(--naranja);font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px}
+.aviso-visto-btn{background:var(--purple);color:#fff;border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;margin-top:8px}
+.aviso-visto-ok{background:var(--verde-bg);color:var(--verde);border:none;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:5px;margin-top:8px}
+.vistos-list{font-size:11.5px;color:var(--text-sec);margin-top:6px;display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.visto-chip{background:var(--verde-bg);color:var(--verde);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px}
+.novisto-chip{background:var(--rojo-bg);color:var(--rojo);font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px}
+
+/* PANEL / TASKS */
+.panel{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px}
+.panel-header{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);background:var(--bg)}
+.panel-title{font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.04em}
+.task-row{display:flex;align-items:center;gap:11px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.task-row:last-child{border-bottom:none}
+.prio-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.p1{background:var(--rojo)}.p2{background:var(--naranja)}.p3{background:var(--azul-med)}.p4{background:var(--verde)}.p5{background:var(--gris-p)}
+.task-text{flex:1;min-width:0}
+.task-label{font-size:14px;font-weight:500;line-height:1.35}
+.task-sub{font-size:11.5px;color:var(--text-sec);margin-top:2px}
+.task-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;margin-top:4px;text-transform:uppercase}
+.tag-fija{background:var(--azul-cla);color:var(--azul-osc)}
+.tag-extra{background:var(--verde-bg);color:var(--verde)}
+.tag-realizada{background:var(--bg);color:var(--text-ter)}
+.task-done .task-label{color:var(--text-ter);text-decoration:line-through}
+.check-box{width:24px;height:24px;border-radius:7px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#fff}
+.check-box.checked{background:var(--verde);border-color:var(--verde)}
+.check-box.checked i{display:block}
+.check-box i{display:none;font-size:14px;color:#fff}
+.empty-state{padding:28px 16px;text-align:center;color:var(--text-ter);font-size:13px}
+.empty-state i{font-size:26px;display:block;margin-bottom:8px;opacity:.4}
+
+/* REALIZADAS (desplegable) */
+.realizadas-toggle{width:100%;padding:11px 14px;background:var(--bg);border:1px solid var(--border);border-radius:14px;font-size:13px;font-weight:600;color:var(--text-sec);cursor:pointer;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.realizadas-toggle i{font-size:16px;transition:transform .2s}
+.realizadas-toggle.open i.toggle-arrow{transform:rotate(180deg)}
+.realizadas-panel{display:none;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:12px}
+.realizadas-panel.open{display:block}
+
+/* NOTIF */
+.notif-row{display:flex;align-items:flex-start;gap:11px;padding:12px 14px;border-bottom:1px solid var(--border)}
+.notif-row:last-child{border-bottom:none}
+.notif-icon{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ni-warn{background:var(--naranja-bg)}.ni-warn i{font-size:14px;color:var(--naranja)}
+.ni-info{background:var(--azul-cla)}.ni-info i{font-size:14px;color:var(--azul-med)}
+.ni-danger{background:var(--rojo-bg)}.ni-danger i{font-size:14px;color:var(--rojo)}
+.ni-ok{background:var(--verde-bg)}.ni-ok i{font-size:14px;color:var(--verde)}
+.notif-text{flex:1;min-width:0}
+.notif-title{font-size:13px;font-weight:600;line-height:1.35}
+.notif-meta{font-size:11.5px;color:var(--text-sec);margin-top:3px}
+.notif-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.mini-btn{font-size:11.5px;padding:5px 10px;border-radius:8px;border:1px solid var(--border);background:#fff;color:var(--text-sec);font-weight:600;cursor:pointer}
+.mini-btn.primary{background:var(--azul-osc);color:#fff;border-color:var(--azul-osc)}
+.tag-pend{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--naranja-bg);color:var(--naranja);margin-left:6px;text-transform:uppercase}
+.tag-ate{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--verde-bg);color:var(--verde);margin-left:6px;text-transform:uppercase}
+
+/* FORMS */
+.form-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-row.full{grid-template-columns:1fr}
+.form-card input,.form-card select,.form-card textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:9px;font-size:14px;font-family:inherit;background:var(--bg)}
+.form-card input:focus,.form-card select:focus,.form-card textarea:focus{outline:none;border-color:var(--azul-med);background:#fff}
+.form-card label{display:block;font-size:11px;font-weight:700;color:var(--text-sec);margin-bottom:5px;text-transform:uppercase}
+.form-card textarea{min-height:60px;resize:none}
+.form-section-title{font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text)}
+
+/* SUGG BOX */
+.sugg-box{background:var(--card);border:1.5px dashed var(--border);border-radius:14px;padding:14px;margin-bottom:12px}
+.sugg-label{font-size:13px;color:var(--text-sec);margin-bottom:10px;display:flex;align-items:center;gap:7px;font-weight:600}
+.sugg-tabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.sugg-tab{flex:1;padding:8px;border:1px solid var(--border);border-radius:9px;background:var(--bg);font-size:12px;font-weight:600;color:var(--text-sec);cursor:pointer;text-align:center;min-width:70px}
+.sugg-tab.active{background:var(--azul-osc);color:#fff;border-color:var(--azul-osc)}
+.btn-secondary{width:100%;padding:11px;background:var(--azul-cla);color:var(--azul-osc);border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer}
+
+/* HISTORIAL */
+.hist-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border)}
+.hist-row:last-child{border-bottom:none}
+.hist-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hist-text{flex:1;min-width:0}
+.hist-title{font-size:13px;font-weight:500;line-height:1.3}
+.hist-meta{font-size:11px;color:var(--text-sec);margin-top:2px}
+
+/* ADMIN */
+.area-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:4px}
+.area-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+.area-card-top{display:flex;align-items:center;gap:7px;margin-bottom:6px}
+.area-card-top i{font-size:17px;color:var(--azul-med)}
+.area-card-name{font-size:12px;font-weight:700}
+.area-prog-bg{height:5px;background:var(--bg);border-radius:99px;overflow:hidden;margin-top:8px}
+.area-prog-bar{height:5px;background:var(--verde);border-radius:99px}
+.user-row{display:flex;align-items:center;gap:11px;padding:11px 14px;border-bottom:1px solid var(--border)}
+.user-row:last-child{border-bottom:none}
+.user-avatar{width:32px;height:32px;border-radius:50%;background:var(--azul-cla);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--azul-osc);flex-shrink:0}
+
+/* MANTENIMIENTO */
+.veh-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;margin-bottom:10px}
+.veh-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.veh-name{font-size:14px;font-weight:700;display:flex;align-items:center;gap:8px}
+.veh-km{font-size:12px;color:var(--text-sec)}
+.maint-item{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-top:1px solid var(--border);font-size:12.5px}
+.maint-status{font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;text-transform:uppercase}
+.st-ok{background:var(--verde-bg);color:var(--verde)}
+.st-warn{background:var(--naranja-bg);color:var(--naranja)}
+.st-danger{background:var(--rojo-bg);color:var(--rojo)}
+
+.export-btn{width:100%;padding:13px;border:1px solid var(--border);border-radius:12px;background:var(--card);color:var(--text);font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:9px;cursor:pointer;margin-bottom:10px}
+.export-btn i{font-size:18px;color:var(--verde)}
+.icon-btn{background:none;border:none;color:var(--text-sec);font-size:17px;cursor:pointer;padding:4px}
+.icon-btn.danger{color:var(--rojo)}
+.loading{display:flex;align-items:center;justify-content:center;padding:32px;color:var(--text-sec);font-size:13px;gap:8px}
+.spin{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--text);color:#fff;padding:11px 18px;border-radius:10px;font-size:13px;z-index:100;opacity:0;transition:opacity .25s;pointer-events:none;max-width:90%;text-align:center}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-logo"><i class="ti ti-building-warehouse"></i></div>
+  <div class="login-h1">Panel Depósito</div>
+  <div class="login-sub">Electro Martin's</div>
+  <div class="login-card">
+    <div id="loginAlert" class="alert-box hidden"></div>
+    <div class="field"><label>Nombre</label><input type="text" id="inputNombre" placeholder="Tu nombre" autocomplete="off"></div>
+    <div class="field"><label>PIN (4 dígitos)</label><input type="password" id="inputPin" placeholder="••••" maxlength="4" inputmode="numeric" class="pin-input"></div>
+    <button class="btn-primary" id="btnLogin"><i class="ti ti-login-2"></i> Ingresar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="hidden" id="mainApp">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-name" id="topName">—</div>
+      <div class="topbar-role" id="topRole">—</div>
+    </div>
+    <div class="topbar-right">
+      <span class="area-badge" id="topBadge">—</span>
+      <button class="logout-btn" id="btnLogout"><i class="ti ti-logout"></i></button>
+    </div>
+  </div>
+  <div class="tabs" id="tabsRow"></div>
+  <div class="content">
+
+    <!-- MI DÍA -->
+    <div class="screen-panel" id="panel-dia">
+      <div id="turnoCheck" class="turno-card hidden">
+        <div class="turno-title"><i class="ti ti-clipboard-check"></i> Check de inicio de turno</div>
+        <div class="turno-items">
+          <div class="turno-item"><div class="turno-check" onclick="toggleTurnoItem(this)"><i class="ti ti-check"></i></div>Llegué a tiempo y estoy en condiciones de trabajar</div>
+          <div class="turno-item"><div class="turno-check" onclick="toggleTurnoItem(this)"><i class="ti ti-check"></i></div>Mi sector está ordenado y limpio</div>
+          <div class="turno-item"><div class="turno-check" onclick="toggleTurnoItem(this)"><i class="ti ti-check"></i></div>Las herramientas y equipos están disponibles</div>
+        </div>
+        <button class="btn-turno" id="btnConfirmarTurno" disabled><i class="ti ti-check"></i> Confirmar inicio de turno</button>
+      </div>
+
+      <div class="day-header">
+        <div>
+          <div class="day-title" id="dayTitle">—</div>
+          <div class="day-sub" id="dayDate">—</div>
+        </div>
+        <div class="day-prog">
+          <div>
+            <div class="day-prog-num" id="dayProgNum">0/0</div>
+            <div class="day-prog-label">completadas</div>
+          </div>
+          <svg class="prog-ring" viewBox="0 0 44 44">
+            <circle cx="22" cy="22" r="18" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4"/>
+            <circle id="progCircle" cx="22" cy="22" r="18" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-dasharray="113" stroke-dashoffset="113" transform="rotate(-90 22 22)"/>
+          </svg>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card"><div class="stat-label"><i class="ti ti-speakerphone"></i>Avisos</div><div class="stat-val" id="statAvisosAdmin">0</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="ti ti-calendar"></i>Fijas</div><div class="stat-val" id="statFijas">0</div></div>
+        <div class="stat-card"><div class="stat-label"><i class="ti ti-plus"></i>Extra</div><div class="stat-val" id="statExtra">0</div></div>
+      </div>
+
+      <!-- AVISOS DEL ADMIN -->
+      <div id="seccionAvisosAdmin" class="hidden">
+        <div class="section-label"><i class="ti ti-speakerphone"></i> Avisos <span class="section-count" id="countAvisosAdmin">0</span></div>
+        <div id="listaAvisosAdmin"></div>
+      </div>
+
+      <!-- TAREAS FIJAS -->
+      <div class="section-label"><i class="ti ti-calendar"></i> Agenda del día — tareas fijas <span class="section-count" id="countFijas">0</span></div>
+      <div class="panel" id="listaTareasFijas">
+        <div class="loading"><i class="ti ti-loader-2 spin"></i> Cargando...</div>
+      </div>
+
+      <!-- TAREAS EXTRA -->
+      <div class="section-label"><i class="ti ti-plus"></i> Tareas asignadas extra <span class="section-count" id="countExtra">0</span></div>
+      <div class="panel" id="listaTareasExtra">
+        <div class="loading"><i class="ti ti-loader-2 spin"></i> Cargando...</div>
+      </div>
+
+      <!-- REALIZADAS -->
+      <button class="realizadas-toggle" id="toggleRealizadas" onclick="toggleRealizadasPanel()">
+        <span><i class="ti ti-circle-check" style="margin-right:6px"></i>Tareas realizadas <span id="countRealizadas" style="margin-left:4px;font-size:12px;color:var(--text-ter)"></span></span>
+        <i class="ti ti-chevron-down toggle-arrow"></i>
+      </button>
+      <div class="realizadas-panel" id="realizadasPanel">
+        <div id="listaRealizadas"><div class="empty-state"><i class="ti ti-checklist"></i>Todavía no completaste tareas hoy</div></div>
+      </div>
+
+      <!-- NOTIFS ENTRE ÁREAS -->
+      <div class="section-label"><i class="ti ti-bell"></i> Notificaciones de otras áreas</div>
+      <div class="panel" id="listaNotifsArea">
+        <div class="empty-state"><i class="ti ti-bell-off"></i>Sin notificaciones</div>
+      </div>
+    </div>
+
+    <!-- REPORTAR -->
+    <div class="screen-panel" id="panel-reportar">
+      <div class="sugg-box">
+        <div class="sugg-label"><i class="ti ti-message-2"></i> ¿Qué querés reportar?</div>
+        <div class="sugg-tabs">
+          <div class="sugg-tab active" onclick="setSuggType('sugerencia',this)">Sugerencia</div>
+          <div class="sugg-tab" onclick="setSuggType('queja',this)">Queja</div>
+          <div class="sugg-tab" onclick="setSuggType('aviso',this)">Aviso a área</div>
+          <div class="sugg-tab" onclick="setSuggType('incidente',this)">Incidente</div>
+        </div>
+        <div class="form-row full" style="margin-bottom:10px">
+          <div><label>Área destino</label>
+          <select id="suggAreaDestino">
+            <option value="encargado">Mi encargado</option>
+            <option value="recepcion">Recepción</option>
+            <option value="picking">Picking</option>
+            <option value="control">Control</option>
+            <option value="despacho">Despacho</option>
+            <option value="admin">Administración</option>
+          </select></div>
+        </div>
+        <div class="form-row full" style="margin-bottom:10px">
+          <div><label>Descripción</label>
+          <textarea id="suggText" placeholder="Describí la situación con detalle..."></textarea></div>
+        </div>
+        <button class="btn-secondary" id="btnEnviarReporte"><i class="ti ti-send"></i> Enviar reporte</button>
+      </div>
+    </div>
+
+    <!-- HISTORIAL -->
+    <div class="screen-panel" id="panel-historial">
+      <div class="section-label">Mis últimas tareas completadas</div>
+      <div class="panel" id="listaHistTareas"><div class="loading"><i class="ti ti-loader-2 spin"></i></div></div>
+      <div class="section-label">Mis reportes enviados</div>
+      <div class="panel" id="listaHistAvisos"><div class="loading"><i class="ti ti-loader-2 spin"></i></div></div>
+    </div>
+
+    <!-- VEHÍCULO -->
+    <div class="screen-panel" id="panel-mantenimiento">
+      <div class="section-label">Control diario — antes de salir</div>
+      <div class="form-card">
+        <div class="form-row">
+          <div><label>Vehículo</label><input type="text" id="mantVehiculo" placeholder="Ej: Ducato 1"></div>
+          <div><label>Km actual</label><input type="number" id="mantKm" placeholder="0"></div>
+        </div>
+        <button class="btn-primary" id="btnGuardarMant"><i class="ti ti-device-floppy"></i> Guardar control diario</button>
+      </div>
+      <div class="section-label">Configurar vehículo (primera vez)</div>
+      <div class="form-card">
+        <div style="font-size:12.5px;color:var(--text-sec);margin-bottom:12px;line-height:1.5">Una sola vez por vehículo, con el km real de cada último service.</div>
+        <div class="form-row">
+          <div><label>Vehículo</label><input type="text" id="cfgVehiculo" placeholder="Ej: Ducato 1"></div>
+          <div><label>Km actual</label><input type="number" id="cfgKmActual" placeholder="100000"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Último aceite (km)</label><input type="number" id="cfgAceite" placeholder="97000"></div>
+          <div><label>Últimos frenos (km)</label><input type="number" id="cfgFrenos" placeholder="95000"></div>
+        </div>
+        <div class="form-row full" style="margin-bottom:10px">
+          <div><label>Último service general (km)</label><input type="number" id="cfgGeneral" placeholder="90000"></div>
+        </div>
+        <button class="btn-primary" id="btnConfigVehiculo"><i class="ti ti-settings"></i> Guardar configuración inicial</button>
+      </div>
+      <div class="section-label">Estado de mantenimiento</div>
+      <div id="listaVehiculos"><div class="loading"><i class="ti ti-loader-2 spin"></i></div></div>
+    </div>
+
+    <!-- PANEL ADMIN -->
+    <div class="screen-panel" id="panel-admin">
+      <div class="section-label">Estado por área — hoy</div>
+      <div class="area-grid" id="areaGrid"><div class="loading"><i class="ti ti-loader-2 spin"></i></div></div>
+
+      <!-- CREAR AVISO ADMIN -->
+      <div class="section-label"><i class="ti ti-speakerphone"></i> Crear aviso para el equipo</div>
+      <div class="form-card">
+        <div class="form-row">
+          <div><label>Área destinataria</label>
+          <select id="avisoArea">
+            <option value="todas">Todas las áreas</option>
+            <option value="recepcion">Recepción</option>
+            <option value="picking">Picking</option>
+            <option value="control">Control</option>
+            <option value="despacho">Despacho</option>
+          </select></div>
+          <div><label>Duración (días)</label>
+          <select id="avisoDuracion">
+            <option value="1">1 día (aviso único)</option>
+            <option value="3">3 días</option>
+            <option value="7">7 días (mercadería nueva)</option>
+            <option value="14">14 días</option>
+            <option value="30">30 días</option>
+          </select></div>
+        </div>
+        <div class="form-row full" style="margin-bottom:10px">
+          <div><label>Mensaje del aviso</label>
+          <textarea id="avisoTexto" placeholder="Ej: Llegó nueva línea de cable subterráneo, revisar ubicaciones..."></textarea></div>
+        </div>
+        <button class="btn-primary" id="btnCrearAviso"><i class="ti ti-speakerphone"></i> Publicar aviso</button>
+      </div>
+
+      <!-- VISTOS DE AVISOS -->
+      <div class="section-label"><i class="ti ti-eye"></i> Seguimiento de avisos publicados</div>
+      <div class="panel" id="listaAvisosAdmin2"><div class="loading"><i class="ti ti-loader-2 spin"></i></div></div>
+
+      <div class="section-label">Bandeja de reportes</div>
+      <div class="panel" id="listaAvisos"><div class="loading"><i class="ti ti-loader-2 spin"></i></div></div>
+
+      <div class="section-label">Asignar tarea extra</div>
+      <div class="form-card">
+        <div class="form-row">
+          <div><label>Área</label><select id="formArea"><option value="recepcion">Recepción</option><option value="picking">Picking</option><option value="control">Control</option><option value="despacho">Despacho</option></select></div>
+          <div><label>Prioridad</label><select id="formPrioridad"><option value="1">1 — Urgente</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5 — Baja</option></select></div>
+        </div>
+        <div class="form-row full" style="margin-bottom:10px">
+          <div><label>Descripción</label><textarea id="formDescripcion" placeholder="Ej: completar pedido Ferro SRL"></textarea></div>
+        </div>
+        <div class="form-row full" style="margin-bottom:10px">
+          <div><label>Responsable</label><input type="text" id="formResponsable" placeholder="Nombre exacto"></div>
+        </div>
+        <button class="btn-primary" id="btnCrearTarea"><i class="ti ti-plus"></i> Asignar tarea</button>
+      </div>
+
+      <div class="section-label">Rendimiento hoy</div>
+      <div class="panel" id="rendimientoPanel"><div class="loading"><i class="ti ti-loader-2 spin"></i></div></div>
+
+      <div class="section-label">Reportes</div>
+      <button class="export-btn" id="btnExportar"><i class="ti ti-file-spreadsheet"></i> Exportar informe Excel del día</button>
+
+      <div class="section-label">Usuarios</div>
+      <div class="panel" id="listaUsuarios"><div class="loading"><i class="ti ti-loader-2 spin"></i></div></div>
+      <div class="form-card" style="margin-top:12px">
+        <div class="form-section-title">Nuevo usuario</div>
+        <div class="form-row">
+          <div><label>Nombre</label><input type="text" id="nuVNombre" placeholder="Nombre"></div>
+          <div><label>PIN</label><input type="text" id="nuVPin" placeholder="0000" maxlength="4"></div>
+        </div>
+        <div class="form-row">
+          <div><label>Área</label><select id="nuVArea"><option value="recepcion">Recepción</option><option value="picking">Picking</option><option value="control">Control</option><option value="despacho">Despacho</option><option value="todas">Todas</option></select></div>
+          <div><label>Rol</label><select id="nuVRol"><option value="operario">Operario</option><option value="encargado">Encargado</option><option value="admin">Admin</option></select></div>
+        </div>
+        <button class="btn-primary" id="btnCrearUsuario"><i class="ti ti-user-plus"></i> Crear usuario</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const API="https://script.google.com/macros/s/AKfycbwJ7KfffdxRV1fay6eB0Iz-Oe5RKprBSEYLA_M3Ngd3ydgev8kpPUrgCXGrQXgGGlXpNA/exec";
+const DIAS=["domingo","lunes","martes","miercoles","jueves","viernes","sabado"];
+const DIAS_L=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
+const MESES=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const AREA_L={recepcion:"Recepción",picking:"Picking",control:"Control",despacho:"Despacho",todas:"Todas"};
+const AREA_IC={recepcion:"ti-truck-loading",picking:"ti-list-check",control:"ti-clipboard-check",despacho:"ti-car"};
+const UMBRALES={aceite:10000,frenos:10000,general:20000};
+const HORARIO={inicio:7,fin:17,dias:[1,2,3,4,5]};
+
+let currentUser=null,pollInterval=null,suggType="sugerencia";
+let tareasFijasData=[],tareasExtraData=[],avisosAdminData=[];
+
+async function apiGet(p){try{const r=await fetch(`${API}?${new URLSearchParams(p)}`);return await r.json()}catch(e){return{ok:false,error:"Sin conexión"}}}
+async function apiPost(b){try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)});return await r.json()}catch(e){return{ok:false,error:"Sin conexión"}}}
+function norm(s){return String(s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function cap(s){return String(s||"").charAt(0).toUpperCase()+String(s||"").slice(1)}
+function initials(n){return String(n||"?").trim().split(" ").map(p=>p[0]).join("").slice(0,2).toUpperCase()}
+function showToast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2400)}
+function csvSafe(s){if(!s&&s!==0)return"";const str=String(s).replace(/"/g,'""');return str.includes(",")||str.includes("\n")?`"${str}"`:str}
+function ahora(){return new Date()}
+function hoyStr(){return ahora().toISOString().slice(0,10)}
+function fechaVence(diasDuracion){const d=ahora();d.setDate(d.getDate()+parseInt(diasDuracion));return d.toISOString().slice(0,10)}
+function esDentroHorario(){const d=ahora();return HORARIO.dias.includes(d.getDay())&&d.getHours()>=HORARIO.inicio&&d.getHours()<HORARIO.fin}
+
+// LOGIN
+document.getElementById("btnLogin").addEventListener("click",doLogin);
+document.getElementById("inputPin").addEventListener("keypress",e=>{if(e.key==="Enter")doLogin()});
+
+function showLoginAlert(msg,type="error"){
+  const el=document.getElementById("loginAlert");
+  el.className=`alert-box alert-${type}`;
+  el.innerHTML=`<i class="ti ${type==="error"?"ti-alert-circle":"ti-lock"}"></i><span>${msg}</span>`;
+  el.classList.remove("hidden");
+}
+
+async function doLogin(){
+  const nombre=document.getElementById("inputNombre").value.trim();
+  const pin=document.getElementById("inputPin").value.trim();
+  document.getElementById("loginAlert").classList.add("hidden");
+  if(!nombre||!pin){showLoginAlert("Completá nombre y PIN");return}
+  const btn=document.getElementById("btnLogin");
+  btn.disabled=true;btn.innerHTML='<i class="ti ti-loader-2 spin"></i> Ingresando...';
+  const res=await apiGet({action:"login",nombre,pin});
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-login-2"></i> Ingresar';
+  if(!res.ok){showLoginAlert(res.error||"Nombre o PIN incorrecto");return}
+  if(res.usuario.rol!=="admin"&&!esDentroHorario()){
+    showLoginAlert("Acceso habilitado de lunes a viernes de 07:00 a 17:00 hs.","block");return
+  }
+  currentUser=res.usuario;
+  startApp();
+}
+
+document.getElementById("btnLogout").addEventListener("click",()=>{
+  currentUser=null;if(pollInterval)clearInterval(pollInterval);
+  document.getElementById("mainApp").classList.add("hidden");
+  document.getElementById("loginScreen").classList.remove("hidden");
+  document.getElementById("inputNombre").value="";
+  document.getElementById("inputPin").value="";
+  document.getElementById("loginAlert").classList.add("hidden");
+});
+
+function startApp(){
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("mainApp").classList.remove("hidden");
+  document.getElementById("topName").textContent=currentUser.nombre;
+  document.getElementById("topRole").textContent=`${cap(currentUser.rol)} · ${AREA_L[currentUser.area]||currentUser.area}`;
+  document.getElementById("topBadge").textContent=AREA_L[currentUser.area]||currentUser.area;
+  buildTabs();loadAll();
+  if(pollInterval)clearInterval(pollInterval);
+  pollInterval=setInterval(loadAll,20000);
+  if(currentUser.rol!=="admin")document.getElementById("turnoCheck").classList.remove("hidden");
+}
+
+function buildTabs(){
+  const row=document.getElementById("tabsRow");row.innerHTML="";
+  const isAdmin=currentUser.rol==="admin",isDesp=currentUser.area==="despacho";
+  const tabs=[{id:"dia",label:"Mi día",icon:"ti-sun"},{id:"reportar",label:"Reportar",icon:"ti-message-2"},{id:"historial",label:"Historial",icon:"ti-history"}];
+  if(isDesp||isAdmin)tabs.push({id:"mantenimiento",label:"Vehículo",icon:"ti-car"});
+  if(isAdmin)tabs.push({id:"admin",label:"Panel",icon:"ti-layout-dashboard"});
+  tabs.forEach((t,i)=>{
+    const div=document.createElement("div");
+    div.className="tab"+(i===0?" active":"");div.dataset.tab=t.id;
+    div.innerHTML=`<i class="ti ${t.icon}"></i><span>${t.label}</span>`;
+    div.addEventListener("click",()=>switchTab(t.id));row.appendChild(div);
+  });
+  switchTab("dia");
+}
+
+function switchTab(id){
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.tab===id));
+  document.querySelectorAll(".screen-panel").forEach(p=>p.classList.remove("active"));
+  const panel=document.getElementById("panel-"+id);if(panel)panel.classList.add("active");
+  if(id==="historial")loadHistorial();
+  if(id==="admin"){loadResumenAreas();loadAvisosAdmin();loadBandejaReportes();loadUsuarios();loadRendimiento();}
+}
+
+function loadAll(){
+  const d=ahora(),diaIdx=d.getDay(),diaStr=DIAS[diaIdx];
+  document.getElementById("dayTitle").textContent=DIAS_L[diaIdx];
+  document.getElementById("dayDate").textContent=`${d.getDate()} de ${MESES[d.getMonth()]} ${d.getFullYear()}`;
+  loadAvisosAdminUsuario();
+  loadAgenda(diaStr);
+  loadTareasExtra();
+  loadNotifsArea();
+  if(currentUser.area==="despacho"||currentUser.rol==="admin")loadMantenimiento();
+}
+
+// CHECK DE TURNO
+function toggleTurnoItem(el){
+  el.classList.toggle("checked");
+  const all=document.querySelectorAll(".turno-check");
+  document.getElementById("btnConfirmarTurno").disabled=![...all].every(c=>c.classList.contains("checked"));
+}
+document.getElementById("btnConfirmarTurno").addEventListener("click",async()=>{
+  const hora=ahora().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
+  await apiPost({action:"crearAviso",area_origen:currentUser.area,mensaje:`✅ Inicio de turno confirmado por ${currentUser.nombre} a las ${hora}`,autor:currentUser.nombre,tipo:"turno",area_destino:"admin"});
+  document.getElementById("turnoCheck").classList.add("hidden");
+  showToast("Inicio de turno registrado");
+});
+
+// AVISOS DEL ADMIN (vista usuario)
+async function loadAvisosAdminUsuario(){
+  const res=await apiGet({action:"getAvisosAdmin",area:currentUser.area,usuario:currentUser.nombre});
+  const seccion=document.getElementById("seccionAvisosAdmin");
+  const cont=document.getElementById("listaAvisosAdmin");
+  if(!res.ok||!res.avisos||res.avisos.length===0){
+    seccion.classList.add("hidden");
+    document.getElementById("statAvisosAdmin").textContent="0";
+    return;
+  }
+  avisosAdminData=res.avisos;
+  seccion.classList.remove("hidden");
+  document.getElementById("statAvisosAdmin").textContent=res.avisos.length;
+  document.getElementById("countAvisosAdmin").textContent=res.avisos.length;
+  cont.innerHTML=res.avisos.map(a=>{
+    const yaVio=(a.vistos||[]).some(v=>norm(v)===norm(currentUser.nombre));
+    return `<div class="aviso-card">
+      <div class="aviso-card-top">
+        <div class="aviso-card-titulo"><i class="ti ti-speakerphone"></i> Aviso del administrador</div>
+        <span class="aviso-vence">Vence: ${a.fecha_vence}</span>
+      </div>
+      <div class="aviso-card-msg">${esc(String(a.mensaje))}</div>
+      <div class="aviso-card-meta">
+        <span>${a.fecha_creacion}</span>
+        ${yaVio
+          ?'<button class="aviso-visto-ok"><i class="ti ti-check"></i> Ya lo leí</button>'
+          :`<button class="aviso-visto-btn" onclick="marcarVisto('${a.id}')"><i class="ti ti-eye"></i> Marcar como leído</button>`
+        }
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function marcarVisto(avisoId){
+  const res=await apiPost({action:"marcarVisto",aviso_id:avisoId,usuario:currentUser.nombre,fecha:hoyStr(),hora:ahora().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"})});
+  if(res.ok){showToast("Marcado como leído");loadAvisosAdminUsuario();}
+  else showToast("No se pudo registrar");
+}
+
+// AGENDA FIJA
+async function loadAgenda(dia){
+  const res=await apiGet({action:"getAgenda",dia,area:currentUser.area,rol:currentUser.rol});
+  tareasFijasData=res.tareas||[];
+  document.getElementById("statFijas").textContent=tareasFijasData.length;
+  document.getElementById("countFijas").textContent=tareasFijasData.length;
+  renderTareasFijas();
+}
+
+function renderTareasFijas(){
+  const cont=document.getElementById("listaTareasFijas");
+  // buscar estados guardados localmente (session)
+  const pendientes=tareasFijasData.filter(t=>!fijasCompletadas.has(norm(t.descripcion)));
+  if(pendientes.length===0){
+    cont.innerHTML=`<div class="empty-state"><i class="ti ti-calendar-check"></i>Todas las tareas fijas del día completadas</div>`;
+  } else {
+    cont.innerHTML=pendientes.map((t,i)=>{
+      const prio=Math.min(Math.max(Number(t.prioridad)||5,1),5);
+      return `<div class="task-row">
+        <div class="prio-dot p${prio}"></div>
+        <div class="task-text">
+          <div class="task-label">${esc(t.descripcion)}</div>
+          <div class="task-sub">Tarea fija · ${cap(t.area)}</div>
+          <span class="task-tag tag-fija">Agenda</span>
+        </div>
+        <div class="check-box" onclick="completarFija('${norm(t.descripcion)}','${esc(t.descripcion)}')">
+          <i class="ti ti-check"></i>
+        </div>
+      </div>`;
+    }).join("");
+  }
+  updateProgress();
+}
+
+// usamos un Set en memoria para las fijas completadas (se resetea al salir)
+const fijasCompletadas=new Set();
+
+function completarFija(key,descripcion){
+  fijasCompletadas.add(key);
+  // registrar en Sheet como aviso de completado
+  apiPost({action:"crearAviso",area_origen:currentUser.area,mensaje:`✅ Tarea fija completada: ${descripcion}`,autor:currentUser.nombre,tipo:"tarea_fija",area_destino:"admin",fecha:hoyStr()});
+  renderTareasFijas();
+  renderRealizadas();
+  showToast("Tarea marcada como realizada");
+}
+
+// TAREAS EXTRA
+async function loadTareasExtra(){
+  const res=await apiGet({action:"getTareas",area:currentUser.rol==="admin"?"todas":currentUser.area});
+  const todas=res.tareas||[];
+  tareasExtraData=todas.filter(t=>{
+    const mismaArea=norm(t.area)===norm(currentUser.area);
+    const esResp=t.responsable&&norm(t.responsable)===norm(currentUser.nombre);
+    return currentUser.rol==="admin"||(mismaArea||esResp);
+  }).sort((a,b)=>(Number(a.prioridad)||9)-(Number(b.prioridad)||9));
+
+  const pendientes=tareasExtraData.filter(t=>t.estado!=="hecho");
+  const hechas=tareasExtraData.filter(t=>t.estado==="hecho");
+
+  document.getElementById("statExtra").textContent=pendientes.length;
+  document.getElementById("countExtra").textContent=pendientes.length;
+
+  const cont=document.getElementById("listaTareasExtra");
+  if(pendientes.length===0){
+    cont.innerHTML=`<div class="empty-state"><i class="ti ti-checklist"></i>Sin tareas extra pendientes</div>`;
+  } else {
+    cont.innerHTML=pendientes.map(t=>{
+      const prio=Math.min(Math.max(Number(t.prioridad)||5,1),5);
+      return `<div class="task-row">
+        <div class="prio-dot p${prio}"></div>
+        <div class="task-text">
+          <div class="task-label">${esc(t.descripcion)}</div>
+          <div class="task-sub">${t.responsable?esc(String(t.responsable))+" · ":""}${esc(t.fecha||"")}</div>
+          <span class="task-tag tag-extra">Extra</span>
+        </div>
+        <div class="check-box" onclick="toggleTarea('${t.id}',false)"><i class="ti ti-check"></i></div>
+      </div>`;
+    }).join("");
+  }
+  renderRealizadas(hechas);
+  updateProgress();
+}
+
+async function toggleTarea(id,wasDone){
+  await apiPost({action:"marcarTarea",id,estado:wasDone?"pendiente":"hecho"});
+  loadTareasExtra();
+  if(currentUser.rol==="admin")loadResumenAreas();
+}
+
+function renderRealizadas(hechasExtra){
+  const cont=document.getElementById("listaRealizadas");
+  const fijasHechas=[...fijasCompletadas].map(k=>{
+    const t=tareasFijasData.find(t=>norm(t.descripcion)===k);
+    return t?`<div class="task-row task-done">
+      <div class="prio-dot p5"></div>
+      <div class="task-text"><div class="task-label">${esc(t.descripcion)}</div><div class="task-sub">Tarea fija</div><span class="task-tag tag-realizada">Realizada</span></div>
+      <div class="check-box checked"><i class="ti ti-check"></i></div>
+    </div>`:"";
+  }).join("");
+
+  const extrasHechas=(hechasExtra||tareasExtraData.filter(t=>t.estado==="hecho")).map(t=>`
+    <div class="task-row task-done">
+      <div class="prio-dot p5"></div>
+      <div class="task-text"><div class="task-label">${esc(t.descripcion)}</div><div class="task-sub">Tarea extra · ${esc(t.fecha||"")}</div><span class="task-tag tag-realizada">Realizada</span></div>
+      <div class="check-box checked" onclick="toggleTarea('${t.id}',true)"><i class="ti ti-check"></i></div>
+    </div>`).join("");
+
+  const total=fijasCompletadas.size+((hechasExtra||tareasExtraData.filter(t=>t.estado==="hecho")).length);
+  document.getElementById("countRealizadas").textContent=total>0?`(${total})`:"";
+
+  if(!fijasHechas&&!extrasHechas){
+    cont.innerHTML=`<div class="empty-state"><i class="ti ti-checklist"></i>Todavía no completaste tareas hoy</div>`;
+  } else {
+    cont.innerHTML=fijasHechas+extrasHechas;
+  }
+}
+
+function toggleRealizadasPanel(){
+  const btn=document.getElementById("toggleRealizadas");
+  const panel=document.getElementById("realizadasPanel");
+  btn.classList.toggle("open");
+  panel.classList.toggle("open");
+}
+
+function updateProgress(){
+  const fijasPend=tareasFijasData.length-fijasCompletadas.size;
+  const extrasPend=tareasExtraData.filter(t=>t.estado!=="hecho").length;
+  const totalPend=fijasPend+extrasPend;
+  const totalAll=tareasFijasData.length+tareasExtraData.length;
+  const done=totalAll-totalPend;
+  const pct=totalAll>0?Math.round(done/totalAll*100):0;
+  document.getElementById("dayProgNum").textContent=`${done}/${totalAll}`;
+  document.getElementById("progCircle").style.strokeDashoffset=113-(113*pct/100);
+}
+
+// NOTIFS ENTRE ÁREAS
+async function loadNotifsArea(){
+  const res=await apiGet({action:"getAvisos"});
+  const cont=document.getElementById("listaNotifsArea");
+  if(!res.ok){cont.innerHTML=`<div class="empty-state"><i class="ti ti-wifi-off"></i>Sin conexión</div>`;return}
+  const avisos=(res.avisos||[]).filter(a=>{
+    const paraArea=norm(a.area_destino||"")===norm(currentUser.area);
+    const noEsMio=norm(a.autor||"")!==norm(currentUser.nombre);
+    const pendiente=a.estado==="pendiente";
+    const noEsTurno=a.tipo!=="turno"&&a.tipo!=="tarea_fija";
+    return paraArea&&noEsMio&&pendiente&&noEsTurno;
+  }).slice(-5).reverse();
+  if(avisos.length===0){cont.innerHTML=`<div class="empty-state"><i class="ti ti-bell-off"></i>Sin notificaciones pendientes</div>`;return}
+  cont.innerHTML=avisos.map(a=>`
+    <div class="notif-row">
+      <div class="notif-icon ni-warn"><i class="ti ti-bell"></i></div>
+      <div class="notif-text">
+        <div class="notif-title">${esc(String(a.mensaje))}</div>
+        <div class="notif-meta">${AREA_L[a.area_origen]||a.area_origen} · ${esc(String(a.autor))} · ${a.fecha}</div>
+        <div class="notif-actions"><button class="mini-btn primary" onclick="marcarAvisoAtendido('${a.id}')">Marcar recibido</button></div>
+      </div>
+    </div>`).join("");
+}
+
+// REPORTAR
+function setSuggType(type,el){
+  suggType=type;
+  document.querySelectorAll(".sugg-tab").forEach(t=>t.classList.remove("active"));
+  el.classList.add("active");
+  const area=document.getElementById("suggAreaDestino");
+  if(type==="aviso")area.value="recepcion";
+  else if(type==="incidente")area.value="admin";
+  else area.value="encargado";
+}
+
+document.getElementById("btnEnviarReporte").addEventListener("click",async()=>{
+  const texto=document.getElementById("suggText").value.trim();
+  const destino=document.getElementById("suggAreaDestino").value;
+  if(!texto){showToast("Escribí algo antes de enviar");return}
+  const btn=document.getElementById("btnEnviarReporte");
+  btn.disabled=true;btn.textContent="Enviando...";
+  const res=await apiPost({action:"crearAviso",area_origen:currentUser.area,area_destino:destino,mensaje:texto,autor:currentUser.nombre,tipo:suggType});
+  btn.disabled=false;btn.innerHTML='<i class="ti ti-send"></i> Enviar reporte';
+  if(res.ok){document.getElementById("suggText").value="";showToast("Reporte enviado")}
+  else showToast("No se pudo enviar");
+});
+
+// HISTORIAL
+async function loadHistorial(){
+  const[tareasRes,avisosRes]=await Promise.all([apiGet({action:"getTareas",area:currentUser.area}),apiGet({action:"getAvisos"})]);
+  const contT=document.getElementById("listaHistTareas"),contA=document.getElementById("listaHistAvisos");
+  const tareas=((tareasRes.tareas||[]).filter(t=>t.estado==="hecho"&&(norm(t.responsable)===norm(currentUser.nombre)||norm(t.area)===norm(currentUser.area)))).slice(-8).reverse();
+  const avisos=((avisosRes.avisos||[]).filter(a=>norm(a.autor)===norm(currentUser.nombre))).slice(-8).reverse();
+  if(tareas.length===0)contT.innerHTML=`<div class="empty-state"><i class="ti ti-checklist"></i>Sin tareas completadas</div>`;
+  else contT.innerHTML=tareas.map(t=>`<div class="hist-row"><div class="hist-icon ni-ok"><i class="ti ti-check"></i></div><div class="hist-text"><div class="hist-title">${esc(t.descripcion)}</div><div class="hist-meta">${cap(t.area)} · ${t.fecha}</div></div></div>`).join("");
+  if(avisos.length===0)contA.innerHTML=`<div class="empty-state"><i class="ti ti-message-off"></i>Sin reportes enviados</div>`;
+  else contA.innerHTML=avisos.map(a=>`<div class="hist-row"><div class="hist-icon ni-info"><i class="ti ti-message-2"></i></div><div class="hist-text"><div class="hist-title">${esc(String(a.mensaje)).slice(0,60)}${a.mensaje&&a.mensaje.length>60?"...":""}</div><div class="hist-meta">${cap(a.tipo||"aviso")} → ${AREA_L[a.area_destino]||a.area_destino||"—"} · ${a.fecha} · <span style="color:${a.estado==="atendido"?"var(--verde)":"var(--naranja)"}">${a.estado==="atendido"?"Atendido":"Pendiente"}</span></div></div></div>`).join("");
+}
+
+// MANTENIMIENTO
+document.getElementById("btnGuardarMant").addEventListener("click",async()=>{
+  const vehiculo=document.getElementById("mantVehiculo").value.trim(),km=document.getElementById("mantKm").value;
+  if(!vehiculo||!km){showToast("Completá vehículo y km");return}
+  const btn=document.getElementById("btnGuardarMant");btn.disabled=true;
+  const res=await apiPost({action:"actualizarMantenimiento",vehiculo,km_actual:Number(km),soloKm:true});
+  btn.disabled=false;
+  if(res.ok){showToast("Control diario guardado");document.getElementById("mantKm").value="";loadMantenimiento();}
+  else showToast("No se pudo guardar");
+});
+
+document.getElementById("btnConfigVehiculo").addEventListener("click",async()=>{
+  const vehiculo=document.getElementById("cfgVehiculo").value.trim(),km_actual=document.getElementById("cfgKmActual").value;
+  if(!vehiculo||!km_actual){showToast("Completá vehículo y km actual");return}
+  const btn=document.getElementById("btnConfigVehiculo");btn.disabled=true;
+  const ua=document.getElementById("cfgAceite").value,uf=document.getElementById("cfgFrenos").value,ug=document.getElementById("cfgGeneral").value;
+  const res=await apiPost({action:"actualizarMantenimiento",vehiculo,km_actual:Number(km_actual),ultimo_aceite_km:ua?Number(ua):Number(km_actual),ultimo_frenos_km:uf?Number(uf):Number(km_actual),ultimo_general_km:ug?Number(ug):Number(km_actual)});
+  btn.disabled=false;
+  if(res.ok){showToast("Vehículo configurado");["cfgVehiculo","cfgKmActual","cfgAceite","cfgFrenos","cfgGeneral"].forEach(id=>document.getElementById(id).value="");loadMantenimiento();}
+  else showToast("No se pudo guardar");
+});
+
+async function loadMantenimiento(){
+  const res=await apiGet({action:"getMantenimiento"});
+  const cont=document.getElementById("listaVehiculos");
+  if(!res.ok||!res.vehiculos||res.vehiculos.length===0){cont.innerHTML=`<div class="empty-state"><i class="ti ti-car"></i>Sin vehículos cargados</div>`;return}
+  cont.innerHTML=res.vehiculos.map(v=>{
+    const km=Number(v.km_actual)||0;
+    const aR=UMBRALES.aceite-(km-Number(v.ultimo_aceite_km||0)),fR=UMBRALES.frenos-(km-Number(v.ultimo_frenos_km||0)),gR=UMBRALES.general-(km-Number(v.ultimo_general_km||0));
+    function st(r){return r<=0?{cls:"st-danger",txt:"Vencido"}:r<=1500?{cls:"st-warn",txt:`${Math.round(r)} km`}:{cls:"st-ok",txt:`${Math.round(r)} km`}}
+    const eA=st(aR),eF=st(fR),eG=st(gR);
+    return `<div class="veh-card"><div class="veh-top"><div class="veh-name"><i class="ti ti-truck"></i>${esc(String(v.vehiculo))}</div><div class="veh-km">${km.toLocaleString()} km</div></div>
+    <div class="maint-item"><span>Aceite y filtro</span><span class="maint-status ${eA.cls}">${eA.txt}</span></div>
+    <div class="maint-item"><span>Frenos</span><span class="maint-status ${eF.cls}">${eF.txt}</span></div>
+    <div class="maint-item"><span>Service general</span><span class="maint-status ${eG.cls}">${eG.txt}</span></div></div>`;
+  }).join("");
+}
+
+// ADMIN: CREAR AVISO
+document.getElementById("btnCrearAviso").addEventListener("click",async()=>{
+  const texto=document.getElementById("avisoTexto").value.trim();
+  const area=document.getElementById("avisoArea").value;
+  const duracion=document.getElementById("avisoDuracion").value;
+  if(!texto){showToast("Escribí el mensaje del aviso");return}
+  const btn=document.getElementById("btnCrearAviso");btn.disabled=true;
+  const res=await apiPost({action:"crearAvisoAdmin",mensaje:texto,area_destino:area,duracion_dias:Number(duracion),autor:currentUser.nombre,fecha_creacion:hoyStr(),fecha_vence:fechaVence(duracion)});
+  btn.disabled=false;
+  if(res.ok){document.getElementById("avisoTexto").value="";showToast("Aviso publicado");loadAvisosAdmin();}
+  else showToast("No se pudo publicar");
+});
+
+// ADMIN: AVISOS CON VISTOS
+async function loadAvisosAdmin(){
+  const res=await apiGet({action:"getAvisosAdmin",area:"todas",usuario:"admin"});
+  const cont=document.getElementById("listaAvisosAdmin2");
+  if(!res.ok||!res.avisos||res.avisos.length===0){cont.innerHTML=`<div class="empty-state"><i class="ti ti-speakerphone"></i>No hay avisos publicados</div>`;return}
+  cont.innerHTML=res.avisos.map(a=>{
+    const vistos=a.vistos||[];
+    const vistosChips=vistos.map(v=>`<span class="visto-chip">✓ ${esc(v)}</span>`).join(" ");
+    return `<div class="aviso-card" style="margin-bottom:10px">
+      <div class="aviso-card-top">
+        <div class="aviso-card-titulo"><i class="ti ti-speakerphone"></i> ${AREA_L[a.area_destino]||a.area_destino}</div>
+        <span class="aviso-vence">Vence: ${a.fecha_vence}</span>
+      </div>
+      <div class="aviso-card-msg">${esc(String(a.mensaje))}</div>
+      <div class="vistos-list"><strong>Leído por:</strong> ${vistosChips||'<span style="color:var(--text-ter)">Nadie todavía</span>'}</div>
+      <div class="notif-actions" style="margin-top:8px">
+        <button class="mini-btn danger" onclick="borrarAvisoAdmin('${a.id}')"><i class="ti ti-trash"></i> Borrar</button>
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function borrarAvisoAdmin(id){
+  if(!confirm("¿Borrar este aviso?"))return;
+  const res=await apiPost({action:"borrarAvisoAdmin",id});
+  if(res.ok){showToast("Aviso borrado");loadAvisosAdmin();}
+  else showToast("No se pudo borrar");
+}
+
+// ADMIN: BANDEJA REPORTES
+async function loadBandejaReportes(){
+  const res=await apiGet({action:"getAvisos"});
+  const cont=document.getElementById("listaAvisos");
+  if(!res.ok){cont.innerHTML=`<div class="empty-state"><i class="ti ti-wifi-off"></i>Sin datos</div>`;return}
+  let avisos=(res.avisos||[]).filter(a=>a.tipo!=="turno"&&a.tipo!=="tarea_fija").slice().reverse();
+  if(avisos.length===0){cont.innerHTML=`<div class="empty-state"><i class="ti ti-bell-off"></i>Sin reportes</div>`;return}
+  cont.innerHTML=avisos.map(a=>{
+    const atendido=a.estado==="atendido";
+    const tipo=a.tipo||"aviso";
+    const iconClass=tipo==="incidente"?"ni-danger":atendido?"ni-info":"ni-warn";
+    const iconI=tipo==="incidente"?"ti-alert-triangle":atendido?"ti-check":"ti-bell";
+    return `<div class="notif-row">
+      <div class="notif-icon ${iconClass}"><i class="ti ${iconI}"></i></div>
+      <div class="notif-text">
+        <div class="notif-title">${esc(String(a.mensaje))}${atendido?'<span class="tag-ate">atendido</span>':'<span class="tag-pend">pendiente</span>'}</div>
+        <div class="notif-meta">${cap(tipo)} · ${AREA_L[a.area_origen]||a.area_origen} · ${esc(String(a.autor))} · ${a.fecha}${a.area_destino?` → ${AREA_L[a.area_destino]||a.area_destino}`:""}</div>
+        ${!atendido?`<div class="notif-actions">
+          <button class="mini-btn primary" onclick="marcarAvisoAtendido('${a.id}')">Marcar atendido</button>
+          ${tipo!=="turno"?`<button class="mini-btn" onclick="convertirEnTarea('${esc(String(a.mensaje))}','${a.area_origen}')">Convertir en tarea</button>`:""}
+        </div>`:""}
+      </div>
+    </div>`;
+  }).join("");
+}
+
+async function marcarAvisoAtendido(id){
+  await apiPost({action:"atenderAviso",id,estado:"atendido"});
+  showToast("Marcado como atendido");
+  loadBandejaReportes();loadNotifsArea();
+}
+
+function convertirEnTarea(msg,area){
+  document.getElementById("formDescripcion").value=msg;
+  document.getElementById("formArea").value=area||"recepcion";
+  showToast("Descripción copiada — completá y asigná");
+}
+
+// ADMIN: CREAR TAREA EXTRA
+document.getElementById("btnCrearTarea").addEventListener("click",async()=>{
+  const area=document.getElementById("formArea").value,prioridad=document.getElementById("formPrioridad").value;
+  const descripcion=document.getElementById("formDescripcion").value.trim(),responsable=document.getElementById("formResponsable").value.trim();
+  if(!descripcion){showToast("Escribí una descripción");return}
+  const btn=document.getElementById("btnCrearTarea");btn.disabled=true;
+  const res=await apiPost({action:"crearTarea",area,descripcion,responsable,prioridad,tipo:"asignada",estado:"pendiente",fecha:hoyStr()});
+  btn.disabled=false;
+  if(res.ok){document.getElementById("formDescripcion").value="";document.getElementById("formResponsable").value="";showToast("Tarea asignada");loadTareasExtra();loadResumenAreas();}
+  else showToast("No se pudo crear");
+});
+
+// ADMIN: RESUMEN
+async function loadResumenAreas(){
+  const res=await apiGet({action:"getResumenAreas"});
+  const cont=document.getElementById("areaGrid");
+  if(!res.ok){cont.innerHTML=`<div class="empty-state"><i class="ti ti-wifi-off"></i>Sin datos</div>`;return}
+  const r=res.resumen||{};
+  cont.innerHTML=Object.keys(AREA_IC).map(area=>{
+    const d=r[area]||{total:0,completadas:0};
+    const pct=d.total>0?Math.round(d.completadas/d.total*100):0;
+    return `<div class="area-card"><div class="area-card-top"><i class="ti ${AREA_IC[area]}"></i><span class="area-card-name">${AREA_L[area]}</span></div>
+    <div class="stat-val" style="font-size:18px">${d.completadas}<span> / ${d.total}</span></div>
+    <div class="area-prog-bg"><div class="area-prog-bar" style="width:${pct}%"></div></div></div>`;
+  }).join("");
+}
+
+// ADMIN: RENDIMIENTO
+async function loadRendimiento(){
+  const res=await apiGet({action:"getTareas",area:"todas"});
+  const cont=document.getElementById("rendimientoPanel");
+  if(!res.ok){cont.innerHTML=`<div class="empty-state"><i class="ti ti-wifi-off"></i>Sin datos</div>`;return}
+  const tareas=res.tareas||[];
+  cont.innerHTML=["recepcion","picking","control","despacho"].map(area=>{
+    const hoyArea=tareas.filter(t=>norm(t.area)===area&&t.fecha===hoyStr());
+    const completadas=hoyArea.filter(t=>t.estado==="hecho").length,total=hoyArea.length;
+    const pct=total>0?Math.round(completadas/total*100):0;
+    return `<div class="task-row"><div class="task-text"><div class="task-label">${AREA_L[area]}</div><div class="task-sub">Hoy: ${completadas}/${total} (${pct}%)</div></div>
+    <div style="font-size:18px;font-weight:700;color:${pct>=80?"var(--verde)":pct>=50?"var(--naranja)":"var(--rojo)"}">${pct}%</div></div>`;
+  }).join("");
+}
+
+// ADMIN: USUARIOS
+async function loadUsuarios(){
+  const res=await apiGet({action:"getUsuarios"});
+  const cont=document.getElementById("listaUsuarios");
+  if(!res.ok){cont.innerHTML=`<div class="empty-state"><i class="ti ti-wifi-off"></i>Sin datos</div>`;return}
+  const usuarios=res.usuarios||[];
+  if(usuarios.length===0){cont.innerHTML=`<div class="empty-state"><i class="ti ti-users"></i>Sin usuarios</div>`;return}
+  cont.innerHTML=usuarios.map(u=>`<div class="user-row">
+    <div class="user-avatar">${initials(u.nombre)}</div>
+    <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700">${esc(String(u.nombre))}</div>
+    <div style="font-size:11.5px;color:var(--text-sec)">${cap(String(u.rol))} · ${AREA_L[u.area]||u.area}</div></div>
+    <button class="icon-btn danger" onclick="borrarUsuario('${u.id}','${esc(String(u.nombre))}')"><i class="ti ti-trash"></i></button>
+  </div>`).join("");
+}
+
+document.getElementById("btnCrearUsuario").addEventListener("click",async()=>{
+  const nombre=document.getElementById("nuVNombre").value.trim(),pin=document.getElementById("nuVPin").value.trim();
+  const area=document.getElementById("nuVArea").value,rol=document.getElementById("nuVRol").value;
+  if(!nombre||pin.length!==4){showToast("Completá nombre y PIN de 4 dígitos");return}
+  const btn=document.getElementById("btnCrearUsuario");btn.disabled=true;
+  const res=await apiPost({action:"crearUsuario",nombre,pin,area,rol});
+  btn.disabled=false;
+  if(res.ok){document.getElementById("nuVNombre").value="";document.getElementById("nuVPin").value="";showToast("Usuario creado");loadUsuarios();}
+  else showToast("No se pudo crear");
+});
+
+async function borrarUsuario(id,nombre){
+  if(!confirm(`¿Borrar a ${nombre}?`))return;
+  const res=await apiPost({action:"borrarUsuario",id});
+  if(res.ok){showToast("Usuario eliminado");loadUsuarios();}
+  else showToast("No se pudo eliminar");
+}
+
+// EXPORTAR
+document.getElementById("btnExportar").addEventListener("click",async()=>{
+  showToast("Generando informe...");
+  const[tRes,aRes]=await Promise.all([apiGet({action:"getTareas",area:"todas"}),apiGet({action:"getAvisos"})]);
+  let csv="TAREAS DEL DÍA\nid,area,descripcion,tipo,responsable,estado,fecha,prioridad\n";
+  (tRes.tareas||[]).filter(t=>t.fecha===hoyStr()).forEach(t=>{csv+=[t.id,t.area,csvSafe(t.descripcion),t.tipo,t.responsable,t.estado,t.fecha,t.prioridad].join(",")+"\n"});
+  csv+="\nREPORTES\nid,area_origen,area_destino,tipo,mensaje,autor,fecha,estado\n";
+  (aRes.avisos||[]).forEach(a=>{csv+=[a.id,a.area_origen,a.area_destino,a.tipo,csvSafe(a.mensaje),a.autor,a.fecha,a.estado].join(",")+"\n"});
+  const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob),a=document.createElement("a");
+  a.href=url;a.download=`informe_deposito_${hoyStr()}.csv`;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  showToast("Informe descargado");
+});
+</script>
+</body>
+</html>
