@@ -470,6 +470,40 @@ const HORARIO={inicio:7,fin:17,dias:[1,2,3,4,5]};
 let currentUser=null,pollInterval=null,suggType="sugerencia";
 let tareasFijasData=[],tareasExtraData=[],avisosAdminData=[];
 
+// ── PERSISTENCIA EN localStorage ───────────────────────────────────────────
+function saveSession(user){
+  try{ localStorage.setItem("pd_user", JSON.stringify(user)); }catch(e){}
+}
+function loadSession(){
+  try{ const s=localStorage.getItem("pd_user"); return s?JSON.parse(s):null; }catch(e){ return null; }
+}
+function clearSession(){
+  try{ localStorage.removeItem("pd_user"); localStorage.removeItem("pd_turno_"+getTurnoKey()); }catch(e){}
+}
+function getTurnoKey(){
+  const d=ahora();
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+function saveTurnoConfirmado(){
+  try{ localStorage.setItem("pd_turno_"+getTurnoKey(), "1"); }catch(e){}
+}
+function isTurnoConfirmado(){
+  try{ return localStorage.getItem("pd_turno_"+getTurnoKey())==="1"; }catch(e){ return false; }
+}
+// Guardar fijas completadas por día
+function getFijasKey(){
+  return `pd_fijas_${currentUser?currentUser.nombre:""}__${getTurnoKey()}`;
+}
+function saveFijasCompletadas(){
+  try{ localStorage.setItem(getFijasKey(), JSON.stringify([...fijasCompletadas])); }catch(e){}
+}
+function loadFijasCompletadas(){
+  try{
+    const s=localStorage.getItem(getFijasKey());
+    if(s){ JSON.parse(s).forEach(k=>fijasCompletadas.add(k)); }
+  }catch(e){}
+}
+
 async function apiGet(p){try{const r=await fetch(`${API}?${new URLSearchParams(p)}`);return await r.json()}catch(e){return{ok:false,error:"Sin conexión"}}}
 async function apiPost(b){try{const r=await fetch(API,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(b)});return await r.json()}catch(e){return{ok:false,error:"Sin conexión"}}}
 function norm(s){return String(s||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
@@ -482,6 +516,15 @@ function ahora(){return new Date()}
 function hoyStr(){return ahora().toISOString().slice(0,10)}
 function fechaVence(diasDuracion){const d=ahora();d.setDate(d.getDate()+parseInt(diasDuracion));return d.toISOString().slice(0,10)}
 function esDentroHorario(){const d=ahora();return HORARIO.dias.includes(d.getDay())&&d.getHours()>=HORARIO.inicio&&d.getHours()<HORARIO.fin}
+
+// ── RESTAURAR SESIÓN AL CARGAR ─────────────────────────────────────────────
+window.addEventListener("load", ()=>{
+  const saved = loadSession();
+  if(saved){
+    currentUser = saved;
+    startApp();
+  }
+});
 
 // LOGIN
 document.getElementById("btnLogin").addEventListener("click",doLogin);
@@ -508,10 +551,12 @@ async function doLogin(){
     showLoginAlert("Acceso habilitado de lunes a viernes de 07:00 a 17:00 hs.","block");return
   }
   currentUser=res.usuario;
+  saveSession(currentUser);
   startApp();
 }
 
 document.getElementById("btnLogout").addEventListener("click",()=>{
+  clearSession();
   currentUser=null;if(pollInterval)clearInterval(pollInterval);
   document.getElementById("mainApp").classList.add("hidden");
   document.getElementById("loginScreen").classList.remove("hidden");
@@ -528,8 +573,18 @@ function startApp(){
   document.getElementById("topBadge").textContent=AREA_L[currentUser.area]||currentUser.area;
   buildTabs();loadAll();
   if(pollInterval)clearInterval(pollInterval);
-  pollInterval=setInterval(loadAll,20000);
-  if(currentUser.rol!=="admin")document.getElementById("turnoCheck").classList.remove("hidden");
+  pollInterval=setInterval(()=>{
+    // Fix 5: no hacer polling si la pestaña está oculta
+    if(!document.hidden) loadAll();
+  },20000);
+  // Fix 2: restaurar fijas completadas del día desde localStorage
+  fijasCompletadas.clear();
+  loadFijasCompletadas();
+
+  // Fix 3: mostrar turno solo si no fue confirmado hoy
+  if(currentUser.rol!=="admin" && !isTurnoConfirmado()){
+    document.getElementById("turnoCheck").classList.remove("hidden");
+  }
 }
 
 function buildTabs(){
@@ -575,6 +630,7 @@ function toggleTurnoItem(el){
 document.getElementById("btnConfirmarTurno").addEventListener("click",async()=>{
   const hora=ahora().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});
   await apiPost({action:"crearAviso",area_origen:currentUser.area,mensaje:`✅ Inicio de turno confirmado por ${currentUser.nombre} a las ${hora}`,autor:currentUser.nombre,tipo:"turno",area_destino:"admin"});
+  saveTurnoConfirmado();
   document.getElementById("turnoCheck").classList.add("hidden");
   showToast("Inicio de turno registrado");
 });
@@ -657,7 +713,7 @@ const fijasCompletadas=new Set();
 
 function completarFija(key,descripcion){
   fijasCompletadas.add(key);
-  // registrar en Sheet como aviso de completado
+  saveFijasCompletadas(); // Fix 2: persistir en localStorage
   apiPost({action:"crearAviso",area_origen:currentUser.area,mensaje:`✅ Tarea fija completada: ${descripcion}`,autor:currentUser.nombre,tipo:"tarea_fija",area_destino:"admin",fecha:hoyStr()});
   renderTareasFijas();
   renderRealizadas();
@@ -743,11 +799,13 @@ function toggleRealizadasPanel(){
 }
 
 function updateProgress(){
-  const fijasPend=tareasFijasData.length-fijasCompletadas.size;
-  const extrasPend=tareasExtraData.filter(t=>t.estado!=="hecho").length;
-  const totalPend=fijasPend+extrasPend;
-  const totalAll=tareasFijasData.length+tareasExtraData.length;
-  const done=totalAll-totalPend;
+  // Fix 4: contar fijas completadas correctamente
+  const fijasDone=fijasCompletadas.size;
+  const fijasTot=tareasFijasData.length;
+  const extrasDone=tareasExtraData.filter(t=>t.estado==="hecho").length;
+  const extrasTot=tareasExtraData.length;
+  const done=fijasDone+extrasDone;
+  const totalAll=fijasTot+extrasTot;
   const pct=totalAll>0?Math.round(done/totalAll*100):0;
   document.getElementById("dayProgNum").textContent=`${done}/${totalAll}`;
   document.getElementById("progCircle").style.strokeDashoffset=113-(113*pct/100);
